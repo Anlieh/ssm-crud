@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>学生列表</title>
+<!--    <link th:href="@{/static/bootstrap-3.4.1-dist/css/bootstrap.min.css}">-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" >
+
+</head>
+<body>
+
+    <!-- 添加用户的模态框 -->
+    <div class="modal fade" id="stuAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">学生添加</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" th:action="@{/addStu}" method="post">
+                        <div class="form-group">
+                            <label  class="col-sm-2 control-label">Name</label>
+                            <div class="col-sm-10">
+                                <input type="text" name="stuName" class="form-control" id="stuName_add_input">
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Email</label>
+                            <div class="col-sm-10">
+                                <input type="email" name="email" class="form-control" id="email_add_input">
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">gender</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline">
+                                    <input type="radio" name="gender" id="gender1_add_input" value="M" checked="checked"> 男
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="gender" id="gender2_add_input" value="F"> 女
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Department</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="dId" id="add-select">
+                                    <!-- 提交id即可 -->
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="stu_save_btn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改用户的模态框 -->
+    <div class="modal fade" id="stuUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" >学生修改</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" th:action="@{/addStu}" method="post">
+                        <div class="form-group">
+                            <label  class="col-sm-2 control-label">Name</label>
+                            <div class="col-sm-10">
+                                <p class="form-control-static" id="stuName-update-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Email</label>
+                            <div class="col-sm-10">
+                                <input type="email" name="email" class="form-control" id="email_update_input">
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">gender</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline">
+                                    <input type="radio" name="gender" id="gender1_update_input" value="M" checked="checked"> 男
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="gender" id="gender2_update_input" value="F"> 女
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Department</label>
+                            <div class="col-sm-4">
+                                <select class="form-control" name="dId" id="update-select">
+                                    <!-- 提交id即可 -->
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="stu_update_btn">更新</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+         <!-- 标题 -->
+        <div class="row">
+            <div class="col-md-6">
+                <h1>SSM-CRUD学生列表</h1>
+            </div>
+        </div>
+
+         <!-- 按钮 -->
+        <div class="row">
+            <div class="col-md-4 col-md-offset-8">
+                <button class="btn btn-primary" id="stu-add-btn">添加</button>
+                <button class="btn btn-danger" >删除</button>
+            </div>
+        </div>
+
+         <!-- 显示表格数据-->
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-hover" id="stus-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>stuName</th>
+                            <th>gender</th>
+                            <th>email</th>
+                            <th>deptName</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 显示分页信息 -->
+        <div class="row">
+            <!-- 分页文字信息 -->
+            <div class="col-md-6" id="page_info">
+
+            </div>
+            <!-- 分页条信息 -->
+            <div class="col-md-6" id="page_nav">
+
+            </div>
+        </div>
+
+    </div>
+
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.6.0.js}"></script>
+    <script type="text/javascript" th:src="@{/static/bootstrap-3.4.1-dist/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+
+        let basePath = [[${#httpServletRequest.getContextPath()}]];
+        let lastPage;
+
+        // 1) 页面加载结束后，发送ajax请求
+        $(function () {
+            to_page(1)
+        });
+
+        function to_page(pn) {
+            $.ajax({
+                url: basePath + "/getJsonStudents",
+                data: "pn=" + pn,
+                type: "GET",
+                success: function (result) {
+                    build_stus_table(result);
+                    build_page_info(result);
+                    build_page_nav(result);
+                },
+            })
+        }
+
+        // $(document).ready(function () {
+        //     $.ajax({
+        //         url: basePath + "/getStusWithJson",
+        //         data: "pn=1",
+        //         type: "GET",
+        //         success: function (result) {
+        //             // 2）解析并显示学生数据
+        //             build_stus_table(result);
+        //             // 3) 解析并显示分页数据
+        //             build_page_info(result);
+        //             build_page_nav(result);
+        //         }
+        //     });
+        // });
+
+        function build_stus_table(result) {
+            // 清空数据
+            $("#stus-table tbody").empty();
+            let stuList = result.extend.pageInfo.list;
+            $.each(stuList, function (index, item) {
+                let idTd = $("<td></td>").append(item.stuId);
+                let nameTd = $("<td></td>").append(item.stuName);
+                let genderTd = $("<td></td>").append(item.gender === 'M' ? "男" : "女");
+                let emailTd = $("<td></td>").append(item.email);
+                let dIdTd = $("<td></td>").append(item.dId);
+                let editBtn = $("<button></button>").addClass("btn btn-primary btn-sm edit-btn")
+                            .append($("<span></span>").addClass("glyphicon glyphicon-pencil")).append("编辑");
+                editBtn.attr("stuId", item.stuId)
+                let delBtn = $("<button></button>").addClass("btn btn-danger btn-sm delete-btn")
+                    .append($("<span></span>").addClass("glyphicon glyphicon-remove")).append("删除");
+                delBtn.attr("stuId", item.stuId)
+                let btnTd = $("<td></td>").append(editBtn).append("  ").append(delBtn);
+                $("<tr></tr>")
+                    .append(idTd)
+                    .append(nameTd)
+                    .append(genderTd)
+                    .append(emailTd)
+                    .append(dIdTd)
+                    .append(btnTd)
+                    .appendTo("#stus-table tbody");
+            })
+
+        }
+
+        function build_page_info(result) {
+            // 显示分页信息
+            $("#page_info").empty();
+            let pageInfo = result.extend.pageInfo;
+            lastPage = pageInfo.navigatePages;
+            $("#page_info").append("第" + pageInfo.pageNum + "页，" + "总" + pageInfo.navigatePages + "页，" +
+                "共" + pageInfo.total + "条记录");
+        }
+
+        function build_page_nav(result) {
+            // 显示分页条
+            $("#page_nav").empty();
+            let pageInfo = result.extend.pageInfo;
+
+            // 首页与前一页
+            let ul = $("<ul></ul>").addClass("pagination");
+            let firstPageLi = $("<li></li>").append($("<a></a>").append("首页").attr("href", "#"));
+            let prePageLi = $("<li></li>").append($("<a></a>").append("&laquo;"));
+            // 设置样式并添加事件
+            if (pageInfo.hasPreviousPage) {
+                prePageLi.click(function () {
+                    to_page(result.extend.pageInfo.prePage)
+                });
+                firstPageLi.click(function () {
+                    to_page(result.extend.pageInfo.navigateFirstPage)
+                });
+            }else {
+                firstPageLi.addClass("disabled");
+                prePageLi.addClass("disabled")
+            }
+
+            ul.append(firstPageLi).append(prePageLi);
+
+            // 数字页
+            $.each(pageInfo.navigatepageNums, function (index, item) {
+                let numLi = $("<li></li>").append($("<a></a>").append(item));
+                if (pageInfo.pageNum === item) {
+                    numLi.addClass("active")
+                }
+                numLi.click(function () {
+                    console.log(item)
+                    to_page(item)
+                });
+                ul.append(numLi);
+            });
+
+            // 尾页和下一页
+            let nextPageLi = $("<li></li>").append($("<a></a>").append("&raquo;"));
+            let lastPageLi = $("<li></li>").append($("<a></a>").append("尾页"));
+            // 设置样式并添加事件
+            if (pageInfo.hasNextPage) {
+                nextPageLi.click(function () {
+                    to_page(result.extend.pageInfo.nextPage)
+                });
+                lastPageLi.click(function () {
+                    to_page(result.extend.pageInfo.navigateLastPage)
+                });
+            } else {
+                nextPageLi.addClass("disabled");
+                lastPageLi.addClass("disabled")
+            }
+
+            ul.append(nextPageLi).append(lastPageLi);
+
+            let nav = $("<nav></nav>").append(ul);
+            nav.appendTo("#page_nav")
+        }
+
+        // 表单重置并清空样式
+        function reset_form(element) {
+            $(element)[0].reset();
+            $(element).find("*").removeClass("has-success has-error");
+            $(element).find(".help-block").text("")
+        }
+
+        // 点击添加按钮弹出模态框
+        $("#stu-add-btn").click(function () {
+            // 清空表单内容(表单重置)
+            reset_form("#stuAddModal form");
+            // 发送ajax请求在下拉列表中显示
+            getDepts("#add-select");
+            $("#stuAddModal").modal({
+               backdrop: "static",
+            });
+        });
+
+        function getDepts(element) {
+            // 获取department并展示
+            $(element).empty();
+            $.ajax({
+                url: basePath + "/getAllDepts",
+                type: "GET",
+                success: function (result) {
+                    // 在下拉菜单中展示数据
+                    $.each(result.extend.deptList, function (index, item) {
+                        let optionEle = $("<option></option>").append(item.deptName).attr("value", item.deptId);
+                        optionEle.appendTo(element)
+                    })
+                }
+            })
+        }
+
+
+        // 校验用户名是否可用
+        $("#stuName_add_input").change(function () {
+            let stuName = this.value();
+            $.ajax({
+                url: basePath + "/checkStu",
+                type: "GET",
+                data: "stuName=" + stuName,
+                success: function (result) {
+                    if (result.code == 200){
+                        show_validate_msg("#stuName_add_input", "success", "用户名可用");
+                    } else if (result.code = 444){
+                        show_validate_msg("#stuName_add_input", "error", "用户名不可用!");
+                    }
+                }
+            })
+        });
+
+        // 点击按钮提交模态框数据
+        $("#stu_save_btn").click(function () {
+            // 1) 检验数据合法性
+            if(!validate_add_form()) {
+                // alert("用户名或邮箱不合法！");
+                return false;
+            }
+            if (this.attr("ajax-va") === "error"){
+                return ;
+            }
+            $.ajax({
+                url: basePath + "/stu",
+                type: "POST",
+                data: $("#stuAddModal form").serialize(),
+                success: function (result) {
+                    if (result.code === 200) {
+                        // 添加成功后，1) 关闭模态框，
+                        $("#stuAddModal").modal('hide');
+                        // 2) 跳转至最后一页
+                        to_page(lastPage + 1)
+                    } else {
+                        // 显示错误字段
+                        if (result.extend.fieldErrors.stuName != undefined) {
+                            show_validate_msg("#stuName_add_input", "error", result.extend.fieldErrors.stuName)
+                        }
+                        if(result.extend.fieldErrors.email != undefined) {
+                            show_validate_msg("#email_add_input", "error", result.extend.fieldErrors.email)
+                        }
+                    }
+
+                }
+            });
+
+        });
+
+        function validate_add_form() {
+            let stuName = $("#stuName_add_input").val();
+            let regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,5})/;
+            if(regName.test(stuName)){
+                show_validate_msg("#stuName_add_input","success","");
+                $("#stu_save_btn").attr("ajax-va", "success");
+            }else {
+                show_validate_msg("#stuName_add_input","error","用户名不合法!");
+                $("#stu_save_btn").attr("ajax-va", "error");
+                return false;
+            }
+            let email = $("#email_add_input").val();
+            let regEmail = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
+            if (regEmail.test(email)){
+                show_validate_msg("#email_add_input","success","");
+            } else {
+                show_validate_msg("#email_add_input","error","邮箱不合法!");
+                return false;
+            }
+            return true;
+        }
+
+        function show_validate_msg(element, status, msg) {
+            $(element).parent().removeClass("has-success has-error");
+            $(element).next("span").text("");
+            if (status === "success") {
+                $(element).parent().addClass("has-success");
+                $(element).next("span").text(msg);
+            } else if (status === "error") {
+                $(element).parent().addClass("has-error");
+                $(element).next("span").text(msg);
+            }
+        }
+
+        $(document).on("click", ".edit-btn", function () {
+            // 1) 显示该名员工信息
+            let stuId = this.attr("stuId");
+            getStudent(stuId);
+            // 2) 显示部门信息
+            getDepts("#update-select");
+            // 显示员工信息
+            getStudent($(this).attr("edit-id"));
+            $("#stu_update_btn").attr("edit-id", $(this).attr("edit-id"));
+            // 3) 弹出修改模态框
+            $("#stuUpdateModal").modal({
+                backdrop: "static"
+            });
+
+        });
+
+        function getStudent(id) {
+            $.ajax({
+                url: basePath + "/stu/" + id,
+                type: "GET",
+                success: function (result) {
+                    let stu = result.extend.student;
+                    $("#stuName-update-static").text(stu.stuName);
+                    $("#email_update_input").text(stu.email);
+                    $("#stuUpdateModal input[name=gender]").val([stu.gender])
+                    $("#stuUpdateModal select").val([stu.dId])
+                }
+            })
+        }
+
+        $("#stu_update_btn").click(function () {
+            $.ajax({
+                url: basePath + "/stu/" + $(this).attr("edit-id"),
+                type: "POST",
+                data: $("#stuUpdateModal form").serialize(),
+                success: function (result) {
+                    alert(result.msg)
+                }
+            })
+        })
+
+
+    </script>
+
+</body>
+</html>
