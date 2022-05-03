@@ -74,11 +74,12 @@ Spring + SpringMVC + MyBatis + MyBatis Generator
 
 
 ### 总结
-UI: Bootstrap 
-
-![image-20220503203618889](C:\Users\chaowen\AppData\Roaming\Typora\typora-user-images\image-20220503203618889.png)
 ![image](https://user-images.githubusercontent.com/80996151/166454494-8b731f31-5943-4a62-8666-6bfa31c513aa.png)
-
+注意点：
+- 新增、修改，引入数据校验（前后端）
+- 删除，单个、批量
+- mybatis generator-xxxMapper
+- ajax -SpringMVC-@RequestMapping
 
 ### 其他
 1. web路径
