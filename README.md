@@ -77,6 +77,8 @@ Spring + SpringMVC + MyBatis + MyBatis Generator
 UI: Bootstrap 
 
 ![image-20220503203618889](C:\Users\chaowen\AppData\Roaming\Typora\typora-user-images\image-20220503203618889.png)
+![image](https://user-images.githubusercontent.com/80996151/166454494-8b731f31-5943-4a62-8666-6bfa31c513aa.png)
+
 
 ### 其他
 1. web路径
